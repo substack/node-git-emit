@@ -11,13 +11,21 @@ var hookFile = __dirname + '/bin/hook.js';
 module.exports = function (repoDir, cb) {
     var hookDir = path.resolve(repoDir) + '/hooks';
     var emitter = new EventEmitter;
-    
+
     var port = Math.floor(Math.random() * ((1<<16) - 1e4) + 1e4);
-    
+    var l = function(){
+        hook.names.forEach(function(name){
+          fs.unlinkSync(hookDir+"/"+name);
+        });
+    };
     emitter.close = function () {
         server.close();
+        process.removeListener("close",l);
+        l();
     };
-    
+
+    process.on("close",l);
+
     var server = emitter.server = dnode(function (remote, conn) {
         this.emit = function (hookName, args, finish) {
             var xs = emitter.listeners(hookName);
@@ -38,7 +46,7 @@ module.exports = function (repoDir, cb) {
             }
         };
     }).listen(port);
-    
+
     seq()
         .seq(function () {
             fs.writeFile(hookDir + '/.git-emit.port', port.toString(), this);
@@ -60,6 +68,6 @@ module.exports = function (repoDir, cb) {
         })
         .catch(cb || console.error)
     ;
-    
+
     return emitter;
 };
