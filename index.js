@@ -24,7 +24,7 @@ module.exports = function (repoDir, cb) {
         l();
     };
 
-    process.on("close",l);
+    process.on("exit",l);
 
     var server = emitter.server = dnode(function (remote, conn) {
         this.emit = function (hookName, args, finish) {
