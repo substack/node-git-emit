@@ -20,7 +20,7 @@ module.exports = function (repoDir, cb) {
     };
     emitter.close = function () {
         server.close();
-        process.removeListener("close",l);
+        process.removeListener("exit",l);
         l();
     };
 
