@@ -10,22 +10,22 @@ var seq = require('seq');
 
 test('accept a patch', function (t) {
     t.plan(3);
-    
+
     var repoDir = '/tmp/' + Math.floor(Math.random() * (1<<30)).toString(16);
     var srcDir = '/tmp/' + Math.floor(Math.random() * (1<<30)).toString(16);
     var dstDir = '/tmp/' + Math.floor(Math.random() * (1<<30)).toString(16);
-    
+
     fs.mkdirSync(repoDir, 0700);
     fs.mkdirSync(srcDir, 0700);
     fs.mkdirSync(dstDir, 0700);
-    
+
     var port = Math.floor(Math.random() * ((1<<16) - 1e4)) + 1e4;
     var repos = pushover(repoDir, this.ok)
     repos.on('push', function (repo) {
         t.equal(repo, 'doom');
     });
     var server = repos.listen(port);
-    
+
     process.chdir(srcDir);
     var repoEmitter;
     seq()
@@ -64,7 +64,7 @@ test('accept a patch', function (t) {
                 .on('exit', this.ok)
         })
         .seq_(function (next) {
-            path.exists(dstDir + '/doom/a.txt', function (ex) {
+            fs.exists(dstDir + '/doom/a.txt', function (ex) {
                 t.ok(ex, 'a.txt exists');
                 next();
             })

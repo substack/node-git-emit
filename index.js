@@ -10,18 +10,33 @@ var hookFile = __dirname + '/bin/hook.js';
 
 module.exports = function (repoDir, cb) {
     var hookDir = path.resolve(repoDir) + '/hooks';
-    var emitter = new EventEmitter;
-    
+    var emitter = new EventEmitter();
+    var closed = false;
+
     var port = Math.floor(Math.random() * ((1<<16) - 1e4) + 1e4);
-    
-    emitter.close = function () {
-        server.close();
+    var l = function(){
+      if(closed) return;
+      closed = true;
+      hook.names.forEach(function(name){
+        try{
+          fs.unlinkSync(hookDir+"/"+name);
+        }catch(e){
+
+        }
+      });
     };
-    
+    emitter.close = function () {
+      emitter.server.close();
+      process.removeListener("exit",l);
+      l();
+    };
+
+    process.on("exit",l);
+
     var server = emitter.server = dnode(function (remote, conn) {
         this.emit = function (hookName, args, finish) {
             var xs = emitter.listeners(hookName);
-            if (xs.length === 0) finish(true)
+            if (xs.length === 0) finish(true);
             else if (!hook.canAbort[hookName]) {
                 finish(true);
                 emitter.emit(hookName, hook(hookName, args));
@@ -38,7 +53,7 @@ module.exports = function (repoDir, cb) {
             }
         };
     }).listen(port);
-    
+
     seq()
         .seq(function () {
             fs.writeFile(hookDir + '/.git-emit.port', port.toString(), this);
@@ -48,18 +63,19 @@ module.exports = function (repoDir, cb) {
             var file = hookDir + '/' + name;
             fs.lstat(file, function (err, s) {
                 if (err && err.code === 'ENOENT') {
-                    fs.symlink(hookFile, file, next)
+                    fs.symlink(hookFile, file, next);
                 }
-                else if (err) next(err)
-                else if (s.isSymbolicLink()) next()
-                else next('hook file already exists: ' + file)
+                else if (err) next(err);
+                else if (s.isSymbolicLink()) next();
+                else next('hook file already exists: ' + file);
             });
         })
         .seq(function () {
-            if (cb) cb(null, emitter)
+            if (cb) cb(null, emitter);
         })
         .catch(cb || console.error)
     ;
-    
+
     return emitter;
 };
+
