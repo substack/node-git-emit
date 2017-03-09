@@ -64,7 +64,8 @@ test('accept a patch', function (t) {
                 .on('exit', this.ok)
         })
         .seq_(function (next) {
-            path.exists(dstDir + '/doom/a.txt', function (ex) {
+            fs.open(dstDir + '/doom/a.txt','r',function(err){
+                var ex = err ? (err.code === "ENOENT" ? false : true) :true;
                 t.ok(ex, 'a.txt exists');
                 next();
             })

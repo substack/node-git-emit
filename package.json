@@ -23,10 +23,10 @@
     },
     "dependencies" : {
         "seq" : "0.3.x",
-        "dnode" : "0.9.x"
+        "dnode" : "1.2.2"
     },
     "devDependencies" : {
-        "tap" : "0.0.x",
+        "tap" : "10.3.x",
         "pushover" : "0.0.x"
     },
     "engines" : {
