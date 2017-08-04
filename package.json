@@ -1,7 +1,7 @@
 {
     "name" : "git-emit",
     "description" : "expose git hooks through an event emitter",
-    "version" : "0.0.0",
+    "version" : "0.0.1",
     "repository" : {
         "type" : "git",
         "url" : "git://github.com/substack/node-git-emit.git"
@@ -23,7 +23,7 @@
     },
     "dependencies" : {
         "seq" : "0.3.x",
-        "dnode" : "0.9.x"
+        "dnode" : "^1.2.2"
     },
     "devDependencies" : {
         "tap" : "0.0.x",
