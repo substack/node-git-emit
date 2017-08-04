@@ -1,7 +1,7 @@
 {
     "name" : "git-emit",
     "description" : "expose git hooks through an event emitter",
-    "version" : "0.0.0",
+    "version" : "0.0.1",
     "repository" : {
         "type" : "git",
         "url" : "git://github.com/substack/node-git-emit.git"
